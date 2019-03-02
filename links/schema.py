@@ -14,17 +14,22 @@ class LinkType(DjangoObjectType):
         model = Link
 
     def resolve_foo(self, info, **kwargs):
+        # self refers to the link instance
         return "Resolve F"
 
 
 class Query(graphene.ObjectType):
+    # Each element in the list  is a LinkType
+    # links is an class instance of the List which is of LinkType
     links = graphene.List(LinkType)
 
+    # Resolving - what should we return in that field?
     def resolve_links(self, info, **kwargs):
         return Link.objects.all()
 
 
 class CreateLink(graphene.Mutation):
+    # These fields are initialized with some instance of types (which reserves a portion in memory)
     id = graphene.Int()
     url = graphene.String()
     description = graphene.String()
@@ -37,6 +42,7 @@ class CreateLink(graphene.Mutation):
         link = Link(url=url, description=description)
         link.save()
 
+        # Instance of the CreateLink class
         return CreateLink(
             id=link.id,
             url=link.url,
